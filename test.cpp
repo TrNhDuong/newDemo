@@ -151,38 +151,39 @@ void countingSort(int* arr, int n)
 }
 
 int getMax(int array[], int n) {
-  int max = array[0];
-  for (int i = 1; i < n; i++)
-    if (array[i] > max)
-      max = array[i];
-  return max;
+    int max = array[0];
+    for (int i = 1; i < n; i++)
+        if (array[i] > max)
+        max = array[i];
+    return max;
 }
 
 // Using counting sort to sort the elements in the basis of significant places
 void countsort_inRadix(int* array, int size, int place) {
-  const int max = 10;
-  int* output = new int[size];
-  int count[max];
+    const int max = 10;
+    int* output = new int[size];
+    int count[max];
 
-  for (int i = 0; i < max; ++i)
-    count[i] = 0;
+    for (int i = 0; i < max; ++i)
+        count[i] = 0;
 
-  // Calculate count of elements
-  for (int i = 0; i < size; i++)
-    count[(array[i] / place) % 10]++;
+    // Calculate count of elements
+    for (int i = 0; i < size; i++)
+        count[(array[i] / place) % 10]++;
 
-  // Calculate cumulative count
-  for (int i = 1; i < max; i++)
-    count[i] += count[i - 1];
+    // Calculate cumulative count
+    for (int i = 1; i < max; i++)
+        count[i] += count[i - 1];
 
-  // Place the elements in sorted order
-  for (int i = size - 1; i >= 0; i--) {
-    output[count[(array[i] / place) % 10] - 1] = array[i];
-    count[(array[i] / place) % 10]--;
-  }
+    // Place the elements in sorted order
+    for (int i = size - 1; i >= 0; i--) {
+        output[count[(array[i] / place) % 10] - 1] = array[i];
+        count[(array[i] / place) % 10]--;
+    }
 
-  for (int i = 0; i < size; i++)
-    array[i] = output[i];
+    for (int i = 0; i < size; i++)
+        array[i] = output[i];
+        
     delete[] output;
 }
 
@@ -223,25 +224,26 @@ string nameDependOnSort(string algo){
     return name;
 }
 
-void Command1(int* &a, int argc, char* argv[]){
-    string fileName = argv[3];
-    string algo = argv[2];
-    fstream file("input.txt", ios::in);
+int* readFile(string fileName, int &size){
+    fstream file(fileName, ios::in);
     if (!file.is_open()){
-        cout << "File is not exist\n";
-        return;
+        cout << "File not exist\n";
+        return nullptr;
     }
-    int sizeArr = 0;
-    file >> sizeArr;
-    a = (int*)malloc(sizeof(int)*sizeArr);
-    for (int i = 0; i < sizeArr; i++)
+
+    int* a = (int*)malloc(sizeof(int)*size);
+
+    file >> size;
+    for (int i = 0; i < size; i++)
         file >> a[i];
-    cout << a[0] << "\n";
+
     file.close();
-    auto start = chrono::high_resolution_clock::now();
-    sortDependOnAlgorithm(algo, a, sizeArr);
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double> duration = end - start;
+    return a;
+}
+
+void printCommad1(int sizeArr, int argc, char* argv[], chrono::duration<double> duration){
+    string algo = argv[2];
+    string fileName = argv[3];
     cout << "ALGORITHM MODE\n";
     cout << "Algorithm: " << nameDependOnSort(algo) << "\n";
     cout << "Input file: " << fileName << "\n";
@@ -258,8 +260,50 @@ void Command1(int* &a, int argc, char* argv[]){
         cout << "Comparision: " << comparision << "\n";
         comparision = 0;
     }
+}
+
+chrono::duration<double> countime(string nameSort, int* &a, int size){
+    auto start = chrono::high_resolution_clock::now();
+    sortDependOnAlgorithm(nameSort, a, size);
+    auto end = chrono::high_resolution_clock::now();
+    return end - start;
+}
+
+void Command1(int* &a, int argc, char* argv[]){
+    string fileName = argv[3];
+    string algo = argv[2];
+    int sizeArr;
+    a = readFile(fileName, sizeArr);
+    
+    // auto start = chrono::high_resolution_clock::now();
+    // sortDependOnAlgorithm(algo, a, sizeArr);
+    // auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> duration = countime(algo, a, sizeArr);
+    printCommad1(sizeArr, argc, argv, duration);
     free(a);
     a = nullptr;
+}
+
+void printCommand2(int argc, char* argv[], chrono::duration<double> duration){
+    string algo = argv[2];
+    string sizeArr = argv[3];
+    string order = argv[4];
+    cout << "ALGORITHM MODE\n";
+    cout << "Algorithm: " << nameDependOnSort(algo) << "\n";
+    cout << "Input size: " << sizeArr << "\n";
+    cout << "Input order: " << order << "\n";
+    cout << "-----------------------\n";
+    string outPara = argv[argc-1];
+    if (outPara == "-time"){
+        cout << "Running time: " << duration.count() << " seconds\n";
+    } else if (outPara == "-comp"){
+        cout << "Comparision: " << comparision << "\n";
+        comparision = 0;
+    } else if (outPara == "-both"){
+        cout << "Running time: " << duration.count() << " seconds\n";
+        cout << "Comparision: " << comparision << "\n";
+        comparision = 0;
+    }
 }
 
 void Command2(int* &a, int argc, char* argv[]){
@@ -284,27 +328,17 @@ void Command2(int* &a, int argc, char* argv[]){
     {
         GenerateData(a, sizeArr, 2);
     }
-    auto start = chrono::high_resolution_clock::now();
-    sortDependOnAlgorithm(algo, a, sizeArr);
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double> duration = end - start;
-    cout << "ALGORITHM MODE\n";
-    cout << "Algorithm: " << nameDependOnSort(algo) << "\n";
-    cout << "Input size: " << sizeArr << "\n";
-    cout << "Input order: " << order << "\n";
-    cout << "-----------------------\n";
-    string outPara = argv[argc-1];
-    if (outPara == "-time"){
-        cout << "Running time: " << duration.count() << " seconds\n";
-    } else if (outPara == "-comp"){
-        cout << "Comparision: " << comparision << "\n";
-        comparision = 0;
-    } else if (outPara == "-both"){
-        cout << "Running time: " << duration.count() << " seconds\n";
-        cout << "Comparision: " << comparision << "\n";
-        comparision = 0;
-    }
-    fstream fileout("outpu1t.txt", ios::out);
+
+    // auto start = chrono::high_resolution_clock::now();
+    // sortDependOnAlgorithm(algo, a, sizeArr);
+    // auto end = chrono::high_resolution_clock::now();
+    // chrono::duration<double> duration = end - start;
+    chrono::duration<double> duration = countime(algo, a, sizeArr);
+
+    printCommand2(argc, argv, duration);
+
+
+    fstream fileout("output.txt", ios::out);
     fileout << sizeArr << "\n";
     for (int i = 0; i < sizeArr; i++)
         fileout << a[i] << ' ';
@@ -324,10 +358,11 @@ void Command3(int* &a, int argc, char* argv[]){
     a = (int*)malloc(sizeof(int)*sizeArr);
     for (int i = 0; i < 4; i++){
         GenerateData(a, sizeArr, i);
-        auto start = chrono::high_resolution_clock::now();
-        sortDependOnAlgorithm(algo, a, sizeArr);
-        auto end = chrono::high_resolution_clock::now();
-        chrono::duration<double> duration = end - start;
+        // auto start = chrono::high_resolution_clock::now();
+        // sortDependOnAlgorithm(algo, a, sizeArr);
+        // auto end = chrono::high_resolution_clock::now();
+        // chrono::duration<double> duration = end - start;
+        chrono::duration<double> duration = countime(algo, a, sizeArr);
         if (i == 0){
             order = "Randomize";
         } else if (i == 1){
@@ -367,17 +402,130 @@ void algorithmMode(int* &a, int argc, char* argv[]){
     }
 }
 
-void comparisionMode(int* a, int argc, char* argv[]){
+void printCommand4(int argc, char* argv[], int sizeArr, chrono::duration<double> duration1, chrono::duration<double> duration2, int compare1, int compare2){
+    string name1 = argv[2];
+    string name2 = argv[3];
+    string fileName = argv[4];
+    cout << "COMPARE MODE\n";
+    cout << "Algorithm: " << nameDependOnSort(name1) << " | " << nameDependOnSort(name2) << "\n";
+    cout << "Input file: " << fileName << "\n";
+    cout << "Input size: " << sizeArr << "\n";
+    cout << "-----------------------\n";
+    cout << "Running time: " << duration1.count() << " | " << duration2.count() << "\n";
+    cout << "Comparisions: " << compare1 << " | " << compare2 << "\n";
+}
 
+void Command4(int* &a, int argc, char* argv[] ){
+    string algo1 = argv[2];
+    string algo2 = argv[3];
+    string fileName = argv[4];
+    int sizeArr;
+    a = readFile(fileName, sizeArr);
+
+    // auto start1 = chrono::high_resolution_clock::now();
+    // sortDependOnAlgorithm(algo1, a, sizeArr);
+    // auto end1 = chrono::high_resolution_clock::now();
+    // chrono::duration<double> duration1 = end1 - start1;
+    chrono::duration<double> duration1 = countime(algo1, a, sizeArr);
+    int compare1 = comparision;
+    comparision = 0;
+
+    // auto start2 = chrono::high_resolution_clock::now();
+    // sortDependOnAlgorithm(algo2, a, sizeArr);
+    // auto end2 = chrono::high_resolution_clock::now();
+    // chrono::duration<double> duration2 = end2 - start2;
+    chrono::duration<double> duration2 = countime(algo2, a, sizeArr);
+    int compare2 = comparision;
+    comparision = 0;
+
+    printCommand4(argc, argv, sizeArr, duration1, duration2, compare1, compare2);
+    free(a);
+    a = nullptr;
+}
+
+void printCommand5(int argc, char* argv[], int sizeArr, chrono::duration<double> duration1, chrono::duration<double> duration2, int compare1, int compare2){
+    string name1 = argv[2];
+    string name2 = argv[3];
+    string fileName = argv[4];
+    string order = argv[5];
+    if (order == "-rand"){
+        order = "Randomize";
+    } else if (order == "-sorted"){
+        order = "Sorted";
+    } else if (order == "-rev"){
+        order = "Reverse";
+    } else if (order == "-nsorted"){
+        order = "Nearly Sorted";
+    };
+    cout << "COMPARE MODE\n";
+    cout << "Algorithm: " << nameDependOnSort(name1) << " | " << nameDependOnSort(name2) << "\n";
+    cout << "Input size: " << fileName << "\n";
+    cout << "Input order: " << order << "\n";
+    cout << "-----------------------\n";
+    cout << "Running time: " << duration1.count() << " | " << duration2.count() << "\n";
+    cout << "Comparisions: " << compare1 << " | " << compare2 << "\n";
+}
+
+void Command5(int* &a, int argc, char* argv[]){
+    string algo1 = argv[2];
+    string algo2 = argv[3];
+    string size = argv[4];
+    string order = argv[5];
+    int sizeArr = stoi(size);
+    a = (int*)malloc(sizeof(int)*sizeArr);
+    if (order == "-rand")
+    {
+        GenerateData(a, sizeArr, 0);
+    } 
+    else if (order == "-sorted")
+    {
+        GenerateData(a, sizeArr, 1);
+    } 
+    else if (order == "-nsorted")
+    {
+        GenerateData(a, sizeArr, 3);
+    } 
+    else if (order == "-rev")
+    {
+        GenerateData(a, sizeArr, 2);
+    }
+
+    // auto start1 = chrono::high_resolution_clock::now();
+    // sortDependOnAlgorithm(algo1, a, sizeArr);
+    // auto end1 = chrono::high_resolution_clock::now();
+    // chrono::duration<double> duration1 = end1 - start1;
+    chrono::duration<double> duration1 = countime(algo1, a, sizeArr);
+    int compare1 = comparision;
+    comparision = 0;
+
+    // auto start2 = chrono::high_resolution_clock::now();
+    // sortDependOnAlgorithm(algo2, a, sizeArr);
+    // auto end2 = chrono::high_resolution_clock::now();
+    // chrono::duration<double> duration2 = end2 - start2;
+    chrono::duration<double> duration2 = countime(algo2, a, sizeArr);
+    int compare2 = comparision;
+    comparision = 0;
+    printCommand5(argc, argv, sizeArr, duration1, duration2, compare1, compare2);
+    free(a);
+    a = nullptr;
+}
+
+void comparisionMode(int* a, int argc, char* argv[]){
+    if (argc == 5){
+        Command4(a, argc, argv);
+    } else if (argc == 6) {
+        Command5(a, argc, argv);
+    }
 }
 
 bool checkInput(int argc, char* argv[]){
+    string mode = argv[1];
     string nameSort = argv[2];
     string outPara = argv[argc-1];
     if (nameSort != "quick-sort" && nameSort != "radix-sort" && nameSort != "counting-sort"){
         return false;
     }
-    if (outPara != "-both" && outPara != "-comp" && outPara != "-time"){
+    if (mode == "-a" && outPara != "-both" && outPara != "-comp" && outPara != "-time"){
         return false;
     }
 
