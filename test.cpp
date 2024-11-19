@@ -90,12 +90,14 @@ void quicksort(int arr[], int left, int right) {
     int tmp;
     int pivot = arr[(left + right) / 2];
       /* partition */
-    while (i <= j) {
+    while (++comparision && i <= j) {
+        ++comparision;
         while (arr[i] < pivot)
             i++;
+        ++comparision;
         while (arr[j] > pivot)
             j--;
-        if (i <= j) {
+        if (++comparision && i <= j) {
             tmp = arr[i];
             arr[i] = arr[j];
             arr[j] = tmp;
@@ -103,9 +105,10 @@ void quicksort(int arr[], int left, int right) {
             j--;
         }
     };
-
+    ++comparision;
     if (left < j)
         quicksort(arr, left, j);
+    ++comparision;
     if (i < right)
         quicksort(arr, i, right);
 }
@@ -153,7 +156,7 @@ void countingSort(int* arr, int n)
 int getMax(int array[], int n) {
     int max = array[0];
     for (int i = 1; i < n; i++)
-        if (array[i] > max)
+        if (++comparision && array[i] > max)
         max = array[i];
     return max;
 }
@@ -591,7 +594,6 @@ bool checkInput(int argc, char* argv[]){
     {
         return false;
     }
-
     return true;
 }
 
