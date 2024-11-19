@@ -183,7 +183,7 @@ void countsort_inRadix(int* array, int size, int place) {
 
     for (int i = 0; i < size; i++)
         array[i] = output[i];
-        
+
     delete[] output;
 }
 
@@ -197,18 +197,18 @@ void radixSort(int array[], int size) {
     countsort_inRadix(array, size, place);
 }
 
-void sortDependOnAlgorithm(string algo, int* a, int n){ 
+void sortDependOnAlgorithm(string algo, int* a, int sizeArr){ 
     if (algo == "quick-sort")
     {
-        quicksort(a, 0, n - 1);
+        quicksort(a, 0, sizeArr - 1);
     } 
     else if (algo == "radix-sort")
     {
-        radixSort(a, n);
+        radixSort(a, sizeArr);
     } 
     else if (algo == "counting-sort")
     {
-        countingSort(a, n);
+        countingSort(a, sizeArr);
     }
 }
 
@@ -224,38 +224,61 @@ string nameDependOnSort(string algo){
     return name;
 }
 
-int* readFile(string fileName, int &size){
+int* readFile(string fileName, int &sizeArr){
     fstream file(fileName, ios::in);
-    if (!file.is_open()){
+    if (!file.is_open())
+    {
         cout << "File not exist\n";
         return nullptr;
     }
 
-    int* a = (int*)malloc(sizeof(int)*size);
+    int* a = (int*)malloc(sizeof(int)*sizeArr);
 
-    file >> size;
-    for (int i = 0; i < size; i++)
+    file >> sizeArr;
+    for (int i = 0; i < sizeArr; i++)
         file >> a[i];
 
     file.close();
     return a;
 }
 
+void writeDownFile(string fileName, int* a, int sizeArr){
+    fstream file(fileName, ios::out);
+    if (!file.is_open())
+    {
+        cout << "Failed to open file/n";
+        return;
+    }
+
+    file << sizeArr << '\n';
+    for (int i = 0; i < sizeArr; i++)
+        file << a[i];
+    
+    file.close();
+}
+
 void printCommad1(int sizeArr, int argc, char* argv[], chrono::duration<double> duration){
     string algo = argv[2];
     string fileName = argv[3];
+
     cout << "ALGORITHM MODE\n";
     cout << "Algorithm: " << nameDependOnSort(algo) << "\n";
     cout << "Input file: " << fileName << "\n";
     cout << "Input size: " << sizeArr << "\n";
     cout << "-----------------------\n";
+
     string outPara = argv[argc-1];
-    if (outPara == "-time"){
+    if (outPara == "-time")
+    {
         cout << "Running time: " << duration.count() << " seconds\n";
-    } else if (outPara == "-comp"){
+    } 
+    else if (outPara == "-comp")
+    {
         cout << "Comparision: " << comparision << "\n";
         comparision = 0;
-    } else if (outPara == "-both"){
+    }
+    else if (outPara == "-both")
+    {
         cout << "Running time: " << duration.count() << " seconds\n";
         cout << "Comparision: " << comparision << "\n";
         comparision = 0;
@@ -288,18 +311,25 @@ void printCommand2(int argc, char* argv[], chrono::duration<double> duration){
     string algo = argv[2];
     string sizeArr = argv[3];
     string order = argv[4];
+
     cout << "ALGORITHM MODE\n";
     cout << "Algorithm: " << nameDependOnSort(algo) << "\n";
     cout << "Input size: " << sizeArr << "\n";
     cout << "Input order: " << order << "\n";
     cout << "-----------------------\n";
+
     string outPara = argv[argc-1];
-    if (outPara == "-time"){
+    if (outPara == "-time")
+    {
         cout << "Running time: " << duration.count() << " seconds\n";
-    } else if (outPara == "-comp"){
+    } 
+    else if (outPara == "-comp")
+    {
         cout << "Comparision: " << comparision << "\n";
         comparision = 0;
-    } else if (outPara == "-both"){
+    } 
+    else if (outPara == "-both")
+    {
         cout << "Running time: " << duration.count() << " seconds\n";
         cout << "Comparision: " << comparision << "\n";
         comparision = 0;
@@ -312,6 +342,7 @@ void Command2(int* &a, int argc, char* argv[]){
     int sizeArr = stoi(size);
     string order = argv[4];
     a = (int*)malloc(sizeof(int)*sizeArr);
+
     if (order == "-rand")
     {
         GenerateData(a, sizeArr, 0);
@@ -337,12 +368,7 @@ void Command2(int* &a, int argc, char* argv[]){
 
     printCommand2(argc, argv, duration);
 
-
-    fstream fileout("output.txt", ios::out);
-    fileout << sizeArr << "\n";
-    for (int i = 0; i < sizeArr; i++)
-        fileout << a[i] << ' ';
-    fileout.close();
+    writeDownFile("output.txt", a, sizeArr);
     free(a);
     a = nullptr;
 }
@@ -352,9 +378,11 @@ void Command3(int* &a, int argc, char* argv[]){
     string size = argv[3];
     string order;
     int sizeArr = stoi(size);
+
     cout << "ALGORITHM MODE\n";
     cout << "Algorithm: " << nameDependOnSort(algo) << "\n";
     cout << "Input size: " << sizeArr << "\n";
+
     a = (int*)malloc(sizeof(int)*sizeArr);
     for (int i = 0; i < 4; i++){
         GenerateData(a, sizeArr, i);
@@ -363,40 +391,60 @@ void Command3(int* &a, int argc, char* argv[]){
         // auto end = chrono::high_resolution_clock::now();
         // chrono::duration<double> duration = end - start;
         chrono::duration<double> duration = countime(algo, a, sizeArr);
-        if (i == 0){
+        if (i == 0)
+        {
             order = "Randomize";
-        } else if (i == 1){
+        } 
+        else if (i == 1)
+        {
             order = "Sorted";
-        } else if (i == 2){
+        } 
+        else if (i == 2)
+        {
             order = "Reverse";
-        } else if (i == 3){
+        } 
+        else if (i == 3)
+        {
             order = "Nearly Sorted";
         };
+
         cout << "Input order: " << order << "\n";
         cout << "-----------------------\n";
         string outPara = argv[argc-1];
-    if (outPara == "-time"){
-        cout << "Running time: " << duration.count() << " seconds\n";
-    } else if (outPara == "-comp"){
-        cout << "Comparision: " << comparision << "\n";
-        comparision = 0;
-    } else if (outPara == "-both"){
-        cout << "Running time: " << duration.count() << " seconds\n";
-        cout << "Comparision: " << comparision << "\n";
-        comparision = 0;
-    }
+
+        if (outPara == "-time")
+        {
+            cout << "Running time: " << duration.count() << " seconds\n";
+        } 
+        else if (outPara == "-comp")
+        {
+            cout << "Comparision: " << comparision << "\n";
+            comparision = 0;
+        } 
+        else if (outPara == "-both")
+        {
+            cout << "Running time: " << duration.count() << " seconds\n";
+            cout << "Comparision: " << comparision << "\n";
+            comparision = 0;
+        }
     }
     free(a);
     a = nullptr;
 }
 
 void algorithmMode(int* &a, int argc, char* argv[]){
-    if (argc == 6){
+    if (argc == 6)
+    {
         Command2(a, argc, argv);
-    } else if (argc == 5){
-        if (argv[3][0] <= 'z' && argv[3][0] >= 'A'){
+    } 
+    else if (argc == 5)
+    {
+        if (argv[3][0] <= 'z' && argv[3][0] >= 'A')
+        {
             Command1(a, argc, argv);
-        } else {
+        } 
+        else 
+        {
             Command3(a, argc, argv);
         }
     }
@@ -406,6 +454,7 @@ void printCommand4(int argc, char* argv[], int sizeArr, chrono::duration<double>
     string name1 = argv[2];
     string name2 = argv[3];
     string fileName = argv[4];
+
     cout << "COMPARE MODE\n";
     cout << "Algorithm: " << nameDependOnSort(name1) << " | " << nameDependOnSort(name2) << "\n";
     cout << "Input file: " << fileName << "\n";
@@ -448,15 +497,24 @@ void printCommand5(int argc, char* argv[], int sizeArr, chrono::duration<double>
     string name2 = argv[3];
     string fileName = argv[4];
     string order = argv[5];
-    if (order == "-rand"){
+
+    if (order == "-rand")
+    {
         order = "Randomize";
-    } else if (order == "-sorted"){
+    } 
+    else if (order == "-sorted")
+    {
         order = "Sorted";
-    } else if (order == "-rev"){
+    } 
+    else if (order == "-rev")
+    {
         order = "Reverse";
-    } else if (order == "-nsorted"){
+    }
+    else if (order == "-nsorted")
+    {
         order = "Nearly Sorted";
     };
+
     cout << "COMPARE MODE\n";
     cout << "Algorithm: " << nameDependOnSort(name1) << " | " << nameDependOnSort(name2) << "\n";
     cout << "Input size: " << fileName << "\n";
@@ -511,9 +569,12 @@ void Command5(int* &a, int argc, char* argv[]){
 }
 
 void comparisionMode(int* a, int argc, char* argv[]){
-    if (argc == 5){
+    if (argc == 5)
+    {
         Command4(a, argc, argv);
-    } else if (argc == 6) {
+    } 
+    else if (argc == 6) 
+    {
         Command5(a, argc, argv);
     }
 }
@@ -522,10 +583,12 @@ bool checkInput(int argc, char* argv[]){
     string mode = argv[1];
     string nameSort = argv[2];
     string outPara = argv[argc-1];
-    if (nameSort != "quick-sort" && nameSort != "radix-sort" && nameSort != "counting-sort"){
+    if (nameSort != "quick-sort" && nameSort != "radix-sort" && nameSort != "counting-sort")
+    {
         return false;
     }
-    if (mode == "-a" && outPara != "-both" && outPara != "-comp" && outPara != "-time"){
+    if (mode == "-a" && outPara != "-both" && outPara != "-comp" && outPara != "-time")
+    {
         return false;
     }
 
@@ -541,11 +604,16 @@ int main(int argc, char* argv[]) {
     string mode = argv[1];
     comparision = 0;
     
-    if (mode == "-a"){
+    if (mode == "-a")
+    {
         algorithmMode(a, argc, argv);
-    } else if (mode == "-c"){
+    } 
+    else if (mode == "-c")
+    {
         comparisionMode(a, argc, argv);
-    } else {
+    } 
+    else 
+    {
         cout << "Invalid mode";
     }
     return 0;
