@@ -7,6 +7,7 @@
 using namespace std;
 
 int comparision;
+void quickSort(int*, int, int);
 
 void swap(int &a, int &b)
 {
@@ -85,6 +86,132 @@ void GenerateData(int* a, int n, int dataType)
 	}
 }
 
+void selectionSort(int* arr, int n) {
+    for (int i = 0;i < n - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1;j < n; j++) {
+            if (++comparision && arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+
+        if (minIndex != i) {
+            swap(arr[i], arr[minIndex]);
+        }
+    }
+}
+
+void heapify(int* arr, int n, int i) {
+    int largest = i;        // Initialize largest as root
+    int left = 2 * i + 1;   // Left child
+    int right = 2 * i + 2;  // Right child
+
+    // Check if left child exists and is greater than the root
+    if (left < n) 
+    {
+        if (++comparision && arr[left] > arr[largest]) {
+            largest = left;
+        }
+    }
+
+    // Check if right child exists and is greater than the root
+    if (right < n)
+    {
+        if (++comparision && arr[right] > arr[largest]) {
+            largest = right;
+        }
+    }
+
+    // If the largest is not the root, swap and recursively heapify the affected subtree
+    if (++comparision && largest != i) 
+    {
+        swap(arr[i], arr[largest]);
+        heapify(arr, n, largest);  // Recursively heapify the affected subtree
+    }
+}
+
+void heapSort(int* arr, int n) {
+    // Build a max heap
+    for (int i = n / 2 - 1;i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    // Extract elements one by one from the heap
+    for (int i = n - 1;i > 0; i--) {
+        // Swap the root (maximum element) with the last element
+        swap(arr[0], arr[i]);
+
+        // Call heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+}
+
+void merge(int* arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    // Temporary arrays to hold the values
+    int* left_arr = new int[n1];
+    int* right_arr = new int[n2];
+
+    // Copy data into temporary arrays
+    for (int i = 0; i < n1; i++) {
+        left_arr[i] = arr[left + i];
+    }
+    for (int i = 0; i < n2; i++) {
+        right_arr[i] = arr[mid + 1 + i];
+    }
+
+    int i = 0;  // Initial index for left subarray
+    int j = 0;  // Initial index for right subarray
+    int k = left;  // Initial index for merged subarray
+
+    // Merge the temporary arrays back into the original array
+    while (i < n1 && j < n2) 
+    {
+        if (++comparision && left_arr[i] <= right_arr[j]) 
+        {
+            arr[k] = left_arr[i];
+            i++;
+        }
+        else 
+        {
+            arr[k] = right_arr[j];
+            j++;
+        }
+        k++;
+    }
+    // Copy the remaining elements of left_arr[], if any
+    while (i < n1) 
+    {
+        arr[k] = left_arr[i];
+        i++;
+        k++;
+    }
+    // Copy the remaining elements of right_arr[], if any
+    while (j < n2) 
+    {
+        arr[k] = right_arr[j];
+        j++;
+        k++;
+    }
+    delete[] left_arr;
+    delete[] right_arr;
+}
+
+void mergeSort(int* arr, int left, int right) {
+    if (left < right) 
+    {
+        int mid = left + (right - left) / 2;
+
+        // Recursively sort the two halves
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+
+        // Merge the sorted halves
+        merge(arr, left, mid, right);
+    }
+}
 void quicksort(int arr[], int left, int right) {
     int i = left, j = right;
     int tmp;
@@ -200,6 +327,112 @@ void radixSort(int array[], int size) {
     countsort_inRadix(array, size, place);
 }
 
+void bubbleSort(int* arr, int sizeArr){
+	int tmp;
+	for (int i = sizeArr; i > 1 && ++comparision; i--)
+    {
+		for (int j = 0; j < i-1 && ++comparision; j++)
+        {
+			if (arr[j] > arr[j+1] && ++comparision)
+            {
+				swap(arr[j], arr[j + 1]);
+			}
+		}
+	}
+}
+
+void shakerSort(int* a, int sizeArr){
+	int left = 0, right = sizeArr - 1, temp;
+	while (left < right && ++comparision){
+		for (int i = left; i < right && ++comparision; i++){
+			if (a[i] > a[i+1] && ++comparision){
+				swap(a[i], a[i+1]);
+			}
+		}
+		right --;
+
+		for (int i = right; i > left && ++comparision; i--){
+			if (a[i] < a[i-1]){
+				swap(a[i], a[i-1]);
+			}
+		}
+		left++;
+	}
+}
+
+void flashSort(int* arr, int sizeArr) {
+    int n = sizeArr;
+    if (n <= 1) return; // Không cần sắp xếp nếu mảng có 0 hoặc 1 phần tử
+
+    // Tìm giá trị nhỏ nhất (minVal) và lớn nhất (maxVal)
+    int minVal = arr[0], maxVal = arr[0];
+    int maxIndex = 0;
+
+    for (int i = 1; i < n; ++i) {
+        if (arr[i] < minVal) {
+            minVal = arr[i];
+        }
+        if (arr[i] > maxVal) {
+            maxVal = arr[i];
+            maxIndex = i;
+        }
+    }
+
+    // Nếu tất cả phần tử đều giống nhau, không cần sắp xếp
+    if (minVal == maxVal) return;
+
+    // Số lượng lớp (class)
+    int numClasses = static_cast<int>(0.45 * n);
+    int* classCount = new int[numClasses](); // Khởi tạo mảng đếm với giá trị 0
+
+    // Tính độ rộng lớp (class width)
+    double classWidth = static_cast<double>(numClasses - 1) / (maxVal - minVal);
+
+    // Phân phối các phần tử vào các lớp
+    for (int i = 0; i < n; ++i) {
+        int k = static_cast<int>(classWidth * (arr[i] - minVal));
+        classCount[k]++;
+    }
+
+    // Cộng dồn mảng đếm để tạo chỉ số kết thúc cho mỗi lớp
+    for (int i = 1; i < numClasses; ++i) {
+        classCount[i] += classCount[i - 1];
+    }
+
+    // Thực hiện FlashSort
+    int nmove = 0, j = 0, k = numClasses - 1;
+    while (nmove < n) {
+        // Tìm phần tử không thuộc lớp hiện tại
+        while (j > classCount[k] - 1) {
+            j++;
+            k = static_cast<int>(classWidth * (arr[j] - minVal));
+        }
+
+        int flash = arr[j];
+        // Di chuyển phần tử đến vị trí đúng trong lớp
+        while (j != classCount[k]) {
+            k = static_cast<int>(classWidth * (flash - minVal));
+            int t = --classCount[k];
+            std::swap(arr[t], flash);
+            nmove++;
+        }
+    }
+
+    // Sắp xếp từng lớp bằng thuật toán sắp xếp nhanh (QuickSort)
+    int start = 0;
+    for (int i = 0; i < numClasses; ++i) {
+        int end = (i == numClasses - 1) ? n : classCount[i];
+        if (end - start > 1) {
+            quickSort(arr, start, end - 1); // Sắp xếp lớp từ start đến end - 1
+        }
+        start = end;
+    }
+
+    delete[] classCount; // Giải phóng bộ nhớ cấp phát động
+}
+
+
+
 void sortDependOnAlgorithm(string algo, int* a, int sizeArr){ 
     if (algo == "quick-sort")
     {
@@ -213,16 +446,65 @@ void sortDependOnAlgorithm(string algo, int* a, int sizeArr){
     {
         countingSort(a, sizeArr);
     }
+    else if (algo == "merge-sort")
+    {
+        mergeSort(a, 0, sizeArr - 1);
+    }
+    else if (algo == "heap-sort")
+    {
+        heapSort(a, sizeArr);
+    }
+    else if (algo == "selection-sort")
+    {
+        selectionSort(a, sizeArr);
+    }
+    else if (algo == "bubble-sort")
+    {
+        bubbleSort(a, sizeArr);
+    }
+    else if (algo == "shaker-sort")
+    {
+        shakerSort(a, sizeArr);
+    }
 }
 
 string nameDependOnSort(string algo){
     string name = algo;
-    if (name == "radix-sort"){
+    if (name == "radix-sort")
+    {
         name = "Radix Sort";
-    } else if (name == "quick-sort"){
+    }
+    else if (name == "quick-sort")
+    {
         name = "Quick Sort";
-    } else if (name == "counting-sort"){
+    }
+    else if (name == "counting-sort")
+    {
         name = "Counting Sort";
+    }
+    else if (name == "merge-sort")
+    {
+        name = "Merge Sort";
+    }
+    else if (name == "heap-sort")
+    {
+        name = "Heap Sort";
+    }
+    else if (name == "selection-sort")
+    {
+        name = "Selection Sort";
+    }
+    else if (name == "bubble-sort")
+    {
+        name = "Bubble Sort";
+    }
+    else if (name == "shaker-sort")
+    {
+        name = "Shaker Sort";
+    }
+    else if (name == "flash-sort")
+    {
+        name = "Flash Sort";
     }
     return name;
 }
@@ -301,9 +583,6 @@ void Command1(int* &a, int argc, char* argv[]){
     int sizeArr;
     a = readFile(fileName, sizeArr);
     
-    // auto start = chrono::high_resolution_clock::now();
-    // sortDependOnAlgorithm(algo, a, sizeArr);
-    // auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> duration = countime(algo, a, sizeArr);
     printCommad1(sizeArr, argc, argv, duration);
     free(a);
@@ -363,10 +642,6 @@ void Command2(int* &a, int argc, char* argv[]){
         GenerateData(a, sizeArr, 2);
     }
 
-    // auto start = chrono::high_resolution_clock::now();
-    // sortDependOnAlgorithm(algo, a, sizeArr);
-    // auto end = chrono::high_resolution_clock::now();
-    // chrono::duration<double> duration = end - start;
     chrono::duration<double> duration = countime(algo, a, sizeArr);
 
     printCommand2(argc, argv, duration);
@@ -389,10 +664,6 @@ void Command3(int* &a, int argc, char* argv[]){
     a = (int*)malloc(sizeof(int)*sizeArr);
     for (int i = 0; i < 4; i++){
         GenerateData(a, sizeArr, i);
-        // auto start = chrono::high_resolution_clock::now();
-        // sortDependOnAlgorithm(algo, a, sizeArr);
-        // auto end = chrono::high_resolution_clock::now();
-        // chrono::duration<double> duration = end - start;
         chrono::duration<double> duration = countime(algo, a, sizeArr);
         if (i == 0)
         {
@@ -474,18 +745,12 @@ void Command4(int* &a, int argc, char* argv[] ){
     int sizeArr;
     a = readFile(fileName, sizeArr);
 
-    // auto start1 = chrono::high_resolution_clock::now();
-    // sortDependOnAlgorithm(algo1, a, sizeArr);
-    // auto end1 = chrono::high_resolution_clock::now();
-    // chrono::duration<double> duration1 = end1 - start1;
     chrono::duration<double> duration1 = countime(algo1, a, sizeArr);
     int compare1 = comparision;
     comparision = 0;
+    free(a);
 
-    // auto start2 = chrono::high_resolution_clock::now();
-    // sortDependOnAlgorithm(algo2, a, sizeArr);
-    // auto end2 = chrono::high_resolution_clock::now();
-    // chrono::duration<double> duration2 = end2 - start2;
+    a = readFile(fileName, sizeArr);
     chrono::duration<double> duration2 = countime(algo2, a, sizeArr);
     int compare2 = comparision;
     comparision = 0;
@@ -551,19 +816,16 @@ void Command5(int* &a, int argc, char* argv[]){
         GenerateData(a, sizeArr, 2);
     }
 
-    // auto start1 = chrono::high_resolution_clock::now();
-    // sortDependOnAlgorithm(algo1, a, sizeArr);
-    // auto end1 = chrono::high_resolution_clock::now();
-    // chrono::duration<double> duration1 = end1 - start1;
-    chrono::duration<double> duration1 = countime(algo1, a, sizeArr);
+    int* newArr = new int[sizeArr];
+    for (int i = 0; i < sizeArr; i++)
+        newArr[i] = a[i];
+    chrono::duration<double> duration1 = countime(algo1, newArr, sizeArr);
     int compare1 = comparision;
     comparision = 0;
 
-    // auto start2 = chrono::high_resolution_clock::now();
-    // sortDependOnAlgorithm(algo2, a, sizeArr);
-    // auto end2 = chrono::high_resolution_clock::now();
-    // chrono::duration<double> duration2 = end2 - start2;
-    chrono::duration<double> duration2 = countime(algo2, a, sizeArr);
+    for (int i = 0; i < sizeArr; i++)
+        newArr[i] = a[i];
+    chrono::duration<double> duration2 = countime(algo2, newArr, sizeArr);
     int compare2 = comparision;
     comparision = 0;
     printCommand5(argc, argv, sizeArr, duration1, duration2, compare1, compare2);
@@ -586,15 +848,19 @@ bool checkInput(int argc, char* argv[]){
     string mode = argv[1];
     string nameSort = argv[2];
     string outPara = argv[argc-1];
-    if (nameSort != "quick-sort" && nameSort != "radix-sort" && nameSort != "counting-sort")
-    {
-        return false;
-    }
+    string typeSort[12] = {"quick-sort", "radix-sort", "counting-sort", "merge-sort", "heap-sort", "selection-sort", "bubble-sort",
+    "shaker-sort", "flash-sort", "insertion-sort", "binary-insertion-sort", "shell-sort" };
+
     if (mode == "-a" && outPara != "-both" && outPara != "-comp" && outPara != "-time")
     {
         return false;
     }
-    return true;
+
+    for (int i = 0; i < 12; i++)
+        if (nameSort == typeSort[i])
+            return true;
+
+    return false;
 }
 
 int main(int argc, char* argv[]) {
