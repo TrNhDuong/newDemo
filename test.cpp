@@ -212,7 +212,7 @@ void mergeSort(int* arr, int left, int right) {
         merge(arr, left, mid, right);
     }
 }
-void quicksort(int arr[], int left, int right) {
+void quickSort(int arr[], int left, int right) {
     int i = left, j = right;
     int tmp;
     int pivot = arr[(left + right) / 2];
@@ -234,10 +234,10 @@ void quicksort(int arr[], int left, int right) {
     };
     ++comparision;
     if (left < j)
-        quicksort(arr, left, j);
+        quickSort(arr, left, j);
     ++comparision;
     if (i < right)
-        quicksort(arr, i, right);
+        quickSort(arr, i, right);
 }
 
 void countingSort(int* arr, int n) 
@@ -362,81 +362,118 @@ void shakerSort(int* a, int sizeArr){
 
 void flashSort(int* arr, int sizeArr) {
     int n = sizeArr;
-    if (n <= 1) return; // Không cần sắp xếp nếu mảng có 0 hoặc 1 phần tử
+    if (n <= 1) return;
 
-    // Tìm giá trị nhỏ nhất (minVal) và lớn nhất (maxVal)
+    // Tìm giá trị lớn nhất và nhỏ nhất
     int minVal = arr[0], maxVal = arr[0];
     int maxIndex = 0;
-
     for (int i = 1; i < n; ++i) {
-        if (arr[i] < minVal) {
-            minVal = arr[i];
-        }
+        if (arr[i] < minVal) minVal = arr[i];
         if (arr[i] > maxVal) {
             maxVal = arr[i];
             maxIndex = i;
         }
     }
 
-    // Nếu tất cả phần tử đều giống nhau, không cần sắp xếp
+    // Nếu tất cả phần tử bằng nhau, không cần sắp xếp
     if (minVal == maxVal) return;
 
-    // Số lượng lớp (class)
+    // Số lớp (buckets)
     int numClasses = static_cast<int>(0.45 * n);
     int* classCount = new int[numClasses](); // Khởi tạo mảng đếm với giá trị 0
-
-    // Tính độ rộng lớp (class width)
     double classWidth = static_cast<double>(numClasses - 1) / (maxVal - minVal);
 
-    // Phân phối các phần tử vào các lớp
+    // Tính toán số phần tử trong mỗi lớp
     for (int i = 0; i < n; ++i) {
         int k = static_cast<int>(classWidth * (arr[i] - minVal));
         classCount[k]++;
     }
 
-    // Cộng dồn mảng đếm để tạo chỉ số kết thúc cho mỗi lớp
+    // Tính vị trí bắt đầu của mỗi lớp
     for (int i = 1; i < numClasses; ++i) {
         classCount[i] += classCount[i - 1];
     }
 
-    // Thực hiện FlashSort
-    int nmove = 0, j = 0, k = numClasses - 1;
+    // Hoán đổi và phân phối phần tử vào đúng lớp
+    int nmove = 0;
+    int j = 0, k = numClasses - 1;
     while (nmove < n) {
-        // Tìm phần tử không thuộc lớp hiện tại
-        while (j > classCount[k] - 1) {
+        while (j >= classCount[k]) {
             j++;
             k = static_cast<int>(classWidth * (arr[j] - minVal));
         }
 
         int flash = arr[j];
-        // Di chuyển phần tử đến vị trí đúng trong lớp
         while (j != classCount[k]) {
             k = static_cast<int>(classWidth * (flash - minVal));
             int t = --classCount[k];
-            std::swap(arr[t], flash);
+            swap(arr[t], flash);
             nmove++;
         }
     }
 
-    // Sắp xếp từng lớp bằng thuật toán sắp xếp nhanh (QuickSort)
+    // Sắp xếp từng lớp bằng quickSort
     int start = 0;
     for (int i = 0; i < numClasses; ++i) {
         int end = (i == numClasses - 1) ? n : classCount[i];
-        if (end - start > 1) {
-            quickSort(arr, start, end - 1); // Sắp xếp lớp từ start đến end - 1
+        if (end - start > 1) { // Chỉ gọi quickSort nếu có hơn một phần tử
+            quickSort(arr, start, end - 1);
         }
         start = end;
     }
-
-    delete[] classCount; // Giải phóng bộ nhớ cấp phát động
+    delete[] classCount; // Giải phóng bộ nhớ
 }
 
+void insertionSort(int* arr, int sizeArr) {
+    for (int i = 1; i < sizeArr; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && (++comparision, arr[j] > key)) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void shellSort(int* arr, int sizeArr) {
+    for (int gap = sizeArr / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < sizeArr; i++) {
+            int temp = arr[i];
+            int j;
+            for (j = i; j >= gap && (++comparision, arr[j - gap] > temp); j -= gap) {
+                arr[j] = arr[j - gap];
+            }
+            arr[j] = temp;
+        }
+    }
+}
+
+void binaryInsertionSort(int* arr, int sizeArr) {
+    for (int i = 1; i < sizeArr; i++) {
+        int key = arr[i];
+        int left = 0, right = i - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (++comparision, arr[mid] <= key)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+
+        for (int j = i - 1; j >= left; j--) {
+            arr[j + 1] = arr[j];
+        }
+        arr[left] = key;
+    }
+}
 
 
 void sortDependOnAlgorithm(string algo, int* a, int sizeArr){ 
     if (algo == "quick-sort")
     {
-        quicksort(a, 0, sizeArr - 1);
+        quickSort(a, 0, sizeArr - 1);
     } 
     else if (algo == "radix-sort")
     {
@@ -465,6 +502,22 @@ void sortDependOnAlgorithm(string algo, int* a, int sizeArr){
     else if (algo == "shaker-sort")
     {
         shakerSort(a, sizeArr);
+    }
+    else if (algo == "flash-sort")
+    {
+        flashSort(a, sizeArr);
+    }
+    else if (algo == "insertion-sort")
+    {
+        insertionSort(a, sizeArr);
+    }
+    else if (algo == "binary-insertion-sort")
+    {
+        binaryInsertionSort(a, sizeArr);
+    }
+    else if (algo == "shell-sort")
+    {
+        shellSort(a, sizeArr);
     }
 }
 
@@ -506,6 +559,19 @@ string nameDependOnSort(string algo){
     {
         name = "Flash Sort";
     }
+    else if (name == "shell-sort")
+    {
+        name = "Shell Sort";
+    }
+    else if (name == "insertion-sort")
+    {
+        name = "Insertion Sort";
+    }
+    else if (name == "binary-insertion-sort")
+    {
+        name = "Binary Insertion Sort";
+    }    
+
     return name;
 }
 
@@ -537,7 +603,7 @@ void writeDownFile(string fileName, int* a, int sizeArr){
 
     file << sizeArr << '\n';
     for (int i = 0; i < sizeArr; i++)
-        file << a[i];
+        file << a[i] << ' ';
     
     file.close();
 }
@@ -664,7 +730,11 @@ void Command3(int* &a, int argc, char* argv[]){
     a = (int*)malloc(sizeof(int)*sizeArr);
     for (int i = 0; i < 4; i++){
         GenerateData(a, sizeArr, i);
+        string input = "input_";
+        writeDownFile(input + to_string(i+1) + ".txt",a, sizeArr);
         chrono::duration<double> duration = countime(algo, a, sizeArr);
+        string output = "output_";
+        writeDownFile(output + to_string(i+1) + ".txt", a, sizeArr);
         if (i == 0)
         {
             order = "Randomize";

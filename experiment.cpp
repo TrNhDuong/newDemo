@@ -6,7 +6,7 @@
 using namespace std;
 using namespace std::chrono;
 
-int comparision;
+long long comparision;
 
 // Hàm hoán đổi
 template <class T>
@@ -84,7 +84,7 @@ void GenerateData(int* a, int n, int dataType)
 
 // Các thuật toán sắp xếp
 
-void quicksort(int* arr, int left, int right) {
+void quickSort(int* arr, int left, int right) {
     int i = left, j = right;
     int tmp;
     int pivot = arr[(left + right) / 2];
@@ -106,10 +106,10 @@ void quicksort(int* arr, int left, int right) {
     };
     ++comparision;
     if (left < j)
-        quicksort(arr, left, j);
+        quickSort(arr, left, j);
     ++comparision;
     if (i < right)
-        quicksort(arr, i, right);
+        quickSort(arr, i, right);
 }
 
 void countingSort(int* arr, int n) 
@@ -199,18 +199,317 @@ void radixSort(int array[], int size) {
     countsort_inRadix(array, size, place);
 }
 
-void sortDependOnAlgorithm(string algo, int* arr, int sizeArr){ 
+void selectionSort(int* arr, int n) {
+    for (int i = 0;i < n - 1; i++) {
+        int minIndex = i;
+        for (int j = i + 1;j < n; j++) {
+            if (++comparision && arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+
+        if (minIndex != i) {
+            swap(arr[i], arr[minIndex]);
+        }
+    }
+}
+
+void heapify(int* arr, int n, int i) {
+    int largest = i;        // Initialize largest as root
+    int left = 2 * i + 1;   // Left child
+    int right = 2 * i + 2;  // Right child
+
+    // Check if left child exists and is greater than the root
+    if (left < n) 
+    {
+        if (++comparision && arr[left] > arr[largest]) {
+            largest = left;
+        }
+    }
+
+    // Check if right child exists and is greater than the root
+    if (right < n)
+    {
+        if (++comparision && arr[right] > arr[largest]) {
+            largest = right;
+        }
+    }
+
+    // If the largest is not the root, swap and recursively heapify the affected subtree
+    if (++comparision && largest != i) 
+    {
+        swap(arr[i], arr[largest]);
+        heapify(arr, n, largest);  // Recursively heapify the affected subtree
+    }
+}
+
+void heapSort(int* arr, int n) {
+    // Build a max heap
+    for (int i = n / 2 - 1;i >= 0; i--) {
+        heapify(arr, n, i);
+    }
+
+    // Extract elements one by one from the heap
+    for (int i = n - 1;i > 0; i--) {
+        // Swap the root (maximum element) with the last element
+        swap(arr[0], arr[i]);
+
+        // Call heapify on the reduced heap
+        heapify(arr, i, 0);
+    }
+}
+
+void merge(int* arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    // Temporary arrays to hold the values
+    int* left_arr = new int[n1];
+    int* right_arr = new int[n2];
+
+    // Copy data into temporary arrays
+    for (int i = 0; i < n1; i++) {
+        left_arr[i] = arr[left + i];
+    }
+    for (int i = 0; i < n2; i++) {
+        right_arr[i] = arr[mid + 1 + i];
+    }
+
+    int i = 0;  // Initial index for left subarray
+    int j = 0;  // Initial index for right subarray
+    int k = left;  // Initial index for merged subarray
+
+    // Merge the temporary arrays back into the original array
+    while (i < n1 && j < n2) 
+    {
+        if (++comparision && left_arr[i] <= right_arr[j]) 
+        {
+            arr[k] = left_arr[i];
+            i++;
+        }
+        else 
+        {
+            arr[k] = right_arr[j];
+            j++;
+        }
+        k++;
+    }
+    // Copy the remaining elements of left_arr[], if any
+    while (i < n1) 
+    {
+        arr[k] = left_arr[i];
+        i++;
+        k++;
+    }
+    // Copy the remaining elements of right_arr[], if any
+    while (j < n2) 
+    {
+        arr[k] = right_arr[j];
+        j++;
+        k++;
+    }
+    delete[] left_arr;
+    delete[] right_arr;
+}
+
+void mergeSort(int* arr, int left, int right) {
+    if (left < right) 
+    {
+        int mid = left + (right - left) / 2;
+
+        // Recursively sort the two halves
+        mergeSort(arr, left, mid);
+        mergeSort(arr, mid + 1, right);
+
+        // Merge the sorted halves
+        merge(arr, left, mid, right);
+    }
+}
+
+void bubbleSort(int* arr, int sizeArr){
+	int tmp;
+	for (int i = sizeArr; i > 1 && ++comparision; i--)
+    {
+		for (int j = 0; j < i-1 && ++comparision; j++)
+        {
+			if (arr[j] > arr[j+1] && ++comparision)
+            {
+				swap(arr[j], arr[j + 1]);
+			}
+		}
+	}
+}
+
+void shakerSort(int* a, int sizeArr){
+	int left = 0, right = sizeArr - 1, temp;
+	while (left < right && ++comparision){
+		for (int i = left; i < right && ++comparision; i++){
+			if (a[i] > a[i+1] && ++comparision){
+				swap(a[i], a[i+1]);
+			}
+		}
+		right --;
+
+		for (int i = right; i > left && ++comparision; i--){
+			if (a[i] < a[i-1]){
+				swap(a[i], a[i-1]);
+			}
+		}
+		left++;
+	}
+}
+
+void flashSort(int* arr, int sizeArr) {
+    int n = sizeArr;
+    if (n <= 1 && ++comparision) return;
+
+    int minVal = arr[0], maxVal = arr[0];
+    int maxIndex = 0;
+    for (int i = 1; i < n && ++comparision; ++i) {
+        if (arr[i] < minVal && ++comparision) minVal = arr[i];
+        if (arr[i] > maxVal && ++comparision) {
+            maxVal = arr[i];
+            maxIndex = i;
+        }
+    }
+
+    if (minVal == maxVal) return;
+
+    int numClasses = static_cast<int>(0.45 * n);
+
+    int* classCount = new int[numClasses];
+    for (int i = 0; ++comparision && i < numClasses; i++)
+        classCount[i] = 0;
+
+    double classWidth = static_cast<double>(numClasses - 1) / (maxVal - minVal);
+
+    for (int i = 0; i < n && ++comparision; ++i) {
+        int k = static_cast<int>(classWidth * (arr[i] - minVal));
+        classCount[k]++;
+    }
+
+    for (int i = 1; i < numClasses && ++comparision; ++i) {
+        classCount[i] += classCount[i - 1];
+    }
+
+    int nmove = 0;
+    int j = 0, k = numClasses - 1;
+    while (nmove < n && ++comparision) {
+        while (j > classCount[k] - 1 && ++comparision) {
+            j++;
+            k = static_cast<int>(classWidth * (arr[j] - minVal));
+        }
+
+        int flash = arr[j];
+        while (j != classCount[k] && ++comparision) {
+            k = static_cast<int>(classWidth * (flash - minVal));
+            int t = --classCount[k];
+            swap(arr[t], flash);
+            nmove++;
+        }
+    }
+
+    int start = 0;
+    for (int i = 0; i < numClasses && ++comparision; ++i) {
+        int end = (i == numClasses - 1 && ++comparision) ? n : classCount[i];
+        quickSort(arr, 0, n - 1);
+        start = end;
+    }
+}
+
+void insertionSort(int* arr, int sizeArr) {
+    for (int i = 1; i < sizeArr; i++) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && (++comparision, arr[j] > key)) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key;
+    }
+}
+
+void shellSort(int* arr, int sizeArr) {
+    for (int gap = sizeArr / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < sizeArr; i++) {
+            int temp = arr[i];
+            int j;
+            for (j = i; j >= gap && (++comparision, arr[j - gap] > temp); j -= gap) {
+                arr[j] = arr[j - gap];
+            }
+            arr[j] = temp;
+        }
+    }
+}
+
+void binaryInsertionSort(int* arr, int sizeArr) {
+    for (int i = 1; i < sizeArr; i++) {
+        int key = arr[i];
+        int left = 0, right = i - 1;
+
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            if (++comparision, arr[mid] <= key)
+                left = mid + 1;
+            else
+                right = mid - 1;
+        }
+
+        for (int j = i - 1; j >= left; j--) {
+            arr[j + 1] = arr[j];
+        }
+        arr[left] = key;
+    }
+}
+
+void sortDependOnAlgorithm(string algo, int* a, int sizeArr){ 
     if (algo == "Quick Sort")
     {
-        quicksort(arr, 0, sizeArr - 1);
+        quickSort(a, 0, sizeArr - 1);
     } 
     else if (algo == "Radix Sort")
     {
-        radixSort(arr, sizeArr);
+        radixSort(a, sizeArr);
     } 
     else if (algo == "Counting Sort")
     {
-        countingSort(arr, sizeArr);
+        countingSort(a, sizeArr);
+    }
+    else if (algo == "Merge Sort")
+    {
+        mergeSort(a, 0, sizeArr - 1);
+    }
+    else if (algo == "Heap Sort")
+    {
+        heapSort(a, sizeArr);
+    }
+    else if (algo == "Selection Sort")
+    {
+        selectionSort(a, sizeArr);
+    }
+    else if (algo == "Bubble Sort")
+    {
+        bubbleSort(a, sizeArr);
+    }
+    else if (algo == "Shaker Sort")
+    {
+        shakerSort(a, sizeArr);
+    }
+    else if (algo == "Flash Sort")
+    {
+        flashSort(a, sizeArr);
+    }
+    else if (algo == "Insertion Sort")
+    {
+        insertionSort(a, sizeArr);
+    }
+    else if (algo == "Binary Insertion Sort")
+    {
+        binaryInsertionSort(a, sizeArr);
+    }
+    else if (algo == "Shell Sort")
+    {
+        shellSort(a, sizeArr);
     }
 }
 
@@ -226,13 +525,14 @@ void runExperiment(int sizeArr, int dataType, string typeSort[])
 {
     int* arr = new int[sizeArr];
     GenerateData(arr, sizeArr, dataType);
-    for (int i = 0; i < 3; i++){
+    for (int i = 0; i < 12; i++){
         int* newArr = new int[sizeArr];
-        for (int i = 0; i < sizeArr; i++)
-            newArr[i] = arr[i];
+        for (int j = 0; j < sizeArr; j++)
+            newArr[j] = arr[j];
         comparision = 0;
-        chrono::duration<double> duration = countime(typeSort[i], arr, sizeArr);
+        chrono::duration<double> duration = countime(typeSort[i], newArr, sizeArr);
         cout << "Type of sort: " << typeSort[i] << "| Time: " << 1000*duration.count() << "ms | Comparisions: " << comparision << "\n";
+        comparision = 0;
         delete[] newArr;
     }
 
@@ -255,7 +555,8 @@ int main()
 {
     int dataOrder[4] = {0, 1, 2, 3}; // Random, Sorted, Reverse, Nearly Sorted
     int dataSize[6] = {10000, 30000, 50000, 100000, 300000, 500000}; // Các kích thước dữ liệu
-    string typeSort[3] = {"Quick Sort", "Counting Sort", "Radix Sort"};
+    string typeSort[12] = {"Quick Sort", "Counting Sort", "Radix Sort", "Merge Sort", "Heap Sort", "Selection Sort", "Bubble Sort", "Shaker Sort", 
+    "Flash Sort", "Insertion Sort", "Binary Insertion Sort", "Shell Sort"};
 
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 6; j++)

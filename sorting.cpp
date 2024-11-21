@@ -212,6 +212,7 @@ void mergeSort(int* arr, int left, int right) {
         merge(arr, left, mid, right);
     }
 }
+
 void quicksort(int arr[], int left, int right) {
     int i = left, j = right;
     int tmp;
@@ -455,7 +456,6 @@ void sortDependOnAlgorithm(string algo, int* a, int sizeArr){
     {
         flashSort(a, sizeArr);
     }
-
 }
 
 string nameDependOnSort(string algo){
