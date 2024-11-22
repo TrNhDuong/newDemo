@@ -340,23 +340,33 @@ void bubbleSort(int* arr, int sizeArr){
 	}
 }
 
-void shakerSort(int* a, int sizeArr){
-	int left = 0, right = sizeArr - 1, temp;
-	while (left < right && ++comparision){
-		for (int i = left; i < right && ++comparision; i++){
-			if (a[i] > a[i+1] && ++comparision){
-				swap(a[i], a[i+1]);
-			}
-		}
-		right --;
-
-		for (int i = right; i > left && ++comparision; i--){
-			if (a[i] < a[i-1]){
-				swap(a[i], a[i-1]);
-			}
-		}
-		left++;
-	}
+void shakerSort(int* a, int sizeArr)
+{
+    int Left = 0;
+    int Right = sizeArr - 1;
+    int k = 0;
+    int i;
+    while (++comparision && Left < Right)
+    {
+        for (i = Left;++comparision && i < Right; i++)
+        {
+            if (++comparision && a[i] > a[i + 1])
+            {
+                swap(a[i], a[i + 1]);
+                k = i;
+            }
+         }
+        Right = k;
+        for (i = Right;++comparision && i > Left; i--)
+        {
+            if (++comparision && a[i] < a[i - 1])
+            {
+                swap(a[i], a[i - 1]);
+                k = i;
+            }
+        }
+        Left = k;
+    }
 }
 
 void flashSort(int* arr, int sizeArr) {
