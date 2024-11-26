@@ -6,8 +6,9 @@
 #include <ctime>
 using namespace std;
 
-int comparision;
+long long comparision;
 void quickSort(int*, int, int);
+void insertionSort(int*, int);
 
 void swap(int &a, int &b)
 {
@@ -426,8 +427,8 @@ void flashSort(int* arr, int sizeArr) {
     int start = 0;
     for (int i = 0; i < numClasses; ++i) {
         int end = (i == numClasses - 1) ? n : classCount[i];
-        if (end - start > 1) { // Chỉ gọi quickSort nếu có hơn một phần tử
-            quickSort(arr, start, end - 1);
+        if (end - start > 1) { // Chỉ gọi Sort nếu có hơn một phần tử
+            insertionSort(arr, end - start);
         }
         start = end;
     }
@@ -669,7 +670,22 @@ void printCommand2(int argc, char* argv[], chrono::duration<double> duration){
     string algo = argv[2];
     string sizeArr = argv[3];
     string order = argv[4];
-
+    if (order == "-rand")
+    {
+        order = "Randomize";
+    } 
+    else if (order == "-sorted")
+    {
+        order = "Sorted";
+    } 
+    else if (order == "-rev")
+    {
+        order = "Reverse";
+    }
+    else if (order == "-nsorted")
+    {
+        order = "Nearly Sorted";
+    };
     cout << "ALGORITHM MODE\n";
     cout << "Algorithm: " << nameDependOnSort(algo) << "\n";
     cout << "Input size: " << sizeArr << "\n";
@@ -743,8 +759,8 @@ void Command3(int* &a, int argc, char* argv[]){
         string input = "input_";
         writeDownFile(input + to_string(i+1) + ".txt",a, sizeArr);
         chrono::duration<double> duration = countime(algo, a, sizeArr);
-        string output = "output_";
-        writeDownFile(output + to_string(i+1) + ".txt", a, sizeArr);
+        // string output = "output_";
+        // writeDownFile(output + to_string(i+1) + ".txt", a, sizeArr);
         if (i == 0)
         {
             order = "Randomize";

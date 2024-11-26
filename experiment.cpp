@@ -7,6 +7,7 @@ using namespace std;
 using namespace std::chrono;
 
 long long comparision;
+void insertionSort(int*, int);
 
 // Hàm hoán đổi
 template <class T>
@@ -422,7 +423,7 @@ void flashSort(int* arr, int sizeArr) {
     int start = 0;
     for (int i = 0; i < numClasses && ++comparision; ++i) {
         int end = (i == numClasses - 1 && ++comparision) ? n : classCount[i];
-        quickSort(arr, 0, n - 1);
+        insertionSort(arr, end - start);
         start = end;
     }
 }
@@ -544,6 +545,7 @@ void runExperiment(int sizeArr, int dataType, string typeSort[])
         cout << "Type of sort: " << typeSort[i] << "| Time: " << 1000*duration.count() << "ms | Comparisions: " << comparision << "\n";
         comparision = 0;
         delete[] newArr;
+        newArr = nullptr;
     }
 
     delete[] arr;
@@ -565,8 +567,8 @@ int main()
 {
     int dataOrder[4] = {0, 1, 2, 3}; // Random, Sorted, Reverse, Nearly Sorted
     int dataSize[6] = {10000, 30000, 50000, 100000, 300000, 500000}; // Các kích thước dữ liệu
-    string typeSort[12] = {"Quick Sort", "Counting Sort", "Radix Sort", "Merge Sort", "Heap Sort", "Selection Sort", "Bubble Sort", "Shaker Sort", 
-    "Flash Sort", "Insertion Sort", "Binary Insertion Sort", "Shell Sort"};
+    string typeSort[12] = {"Quick Sort", "Counting Sort", "Radix Sort", "Merge Sort", "Heap Sort", "Binary Insertion Sort", "Shell Sort", "Bubble Sort", 
+    "Flash Sort", "Insertion Sort", "Shaker Sort", "Selection Sort"};
 
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 6; j++)
